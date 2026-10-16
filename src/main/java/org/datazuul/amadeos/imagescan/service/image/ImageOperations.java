@@ -8,7 +8,7 @@ import java.awt.image.WritableRaster;
 
 /**
  * Edits that keep every pixel: crop, quarter turns and mirroring. They work on the raster, so line art stays
- * one bit per pixel and grey stays grey (the old EuroScan turned every edit into RGB). The source image is
+ * one bit per pixel and grey stays grey instead of becoming RGB. The source image is
  * never changed; each operation returns a new one.
  */
 public final class ImageOperations {

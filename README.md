@@ -28,29 +28,7 @@
 
 ## Architecture
 
-Java 21, Swing and Guice (and JNA on Windows), built like [amade-writepad](https://github.com/datazuul/amade-writepad); theme, language and start-up come from `AmadeApplication` in amade-commons.
-
-- `domain`: `Scanner`, `ScanSettings` (resolution, `ColorMode`, optional `ScanArea` in millimetres), `ScannerOptions` (what a scanner offers), `ScannedImage` (pixels with their resolution), `ImageFormat`.
-- `service.scan`: `ScannerBackend` (list, options, scan), `ScanService` (runs it in the background, caches options), `ScanMonitor` (progress and cancel), `CommandRunner`/`ProcessOutput` (external programs, both output streams read at once).
-  - `sane`: `SaneBackend`, `SaneOptionParser` (device list and `-A` output, maps backend mode names such as "True Gray" or "Binary"), `PnmReader` (PBM/PGM/PPM, which the JDK's ImageIO cannot read).
-  - `wia`: `WiaBackend` and `ComWiaApi`: WIA's automation objects over COM with JNA, on one thread of their own. No PowerShell: Windows Defender blocks a script started by another program as typical for malware.
-- `service.image`: `ImageOperations` (crop, turn, mirror on the raster), `ImageCodec` (PNG/JPEG/TIFF with resolution), `ImageHistory` (undo/redo), `ImageService` (open and save in the background).
-- `service.print`: `ImagePrintable`, `PrintService`.
-- `repository`: `ImageFiles` (atomic writes), `ImagescanPreferences` (`~/.config/amadeos/imagescan/imagescan.properties`).
-- `ui.main`: `MainPresenter` (all commands, without Swing, tested with a fake view and scanner), `MainView`, `MainWindow`, `MainMenuBar`, `MainToolBar`, `ScanSettingsPanel`, `ScanActions`.
-- `ui.view`: `ImageView` (the component), `Viewport` (zoom and scroll position) and `CropSelection` (the frame), both without Swing.
-- `ui.icons`: `ToolIcon`.
-
-### Compared with EuroScan
-
-This replaces `EuroScan` from [euroworks](https://github.com/datazuul/euroworks). Kept: SANE and WIA as backends, the scanner choice, crop with handles, rotate, zoom and pan, saving as PNG or JPEG. Changed:
-
-- The SANE scan works again: EuroScan wrote PNM and read it with `ImageIO`, which has no PNM reader in the JDK, so every Linux scan failed with "PNM-Datei konnte nicht gelesen werden". `PnmReader` decodes it now.
-- One 1150-line class is split into domain, services, presenter and view; the presenter and the image models are tested without a display.
-- Mode and resolution are chosen from what the scanner offers instead of a fixed 200 dpi colour scan; preview and scan area are new.
-- Progress, cancel, undo/redo, flip, TIFF, printing, copy, opening images and the resolution in saved files are new.
-- WIA: the colour intent (property 6146) replaces the data type value 4, which was "colour threshold" rather than colour; no PowerShell scripts any more (Defender blocks them, and a path with an apostrophe broke the old one).
-- Texts in five languages and theme colours instead of German strings and fixed colours.
+Java 21, Swing and Guice (and JNA on Windows), built like [amade-writepad](https://github.com/datazuul/amade-writepad); theme, language and start-up come from `AmadeApplication` in amade-commons. Packages, key decisions and flows are described in [ARCHITECTURE.md](ARCHITECTURE.md).
 
 ## Build and run
 

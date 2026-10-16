@@ -23,8 +23,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 /**
- * WIA over COM with JNA, the way VBScript uses it, but inside the Java process. The previous approach, a
- * PowerShell script started by Java, is what malware does, and Windows Defender stops it.
+ * WIA over COM with JNA, the way VBScript uses it, but inside the Java process. A PowerShell script started
+ * by Java would be what malware does, and Windows Defender stops it.
  *
  * <p>All COM calls run on one platform thread of their own: COM is set up per thread, and virtual threads
  * change their carrier thread. The objects WIA hands out are used on that thread only.
