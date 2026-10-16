@@ -8,7 +8,7 @@ import java.io.InputStream;
 
 /**
  * Reads one Netpbm image (PBM, PGM, PPM; binary P4–P6 and plain P1–P3), the format {@code scanimage}
- * writes. The JDK's ImageIO does not read these, which is why the old EuroScan could not show a SANE scan.
+ * writes. The JDK's ImageIO does not read these.
  *
  * <ul>
  *   <li>PBM (line art) becomes {@link BufferedImage#TYPE_BYTE_BINARY}, 1 bit per pixel;</li>
