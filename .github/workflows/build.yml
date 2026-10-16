@@ -88,6 +88,21 @@ jobs:
         id: windows-tests
         continue-on-error: true
         run: ./gradlew test --no-daemon
+      # Failing Windows tests as annotations, visible on the pull request without opening the log.
+      - name: Report failing Windows tests
+        if: steps.windows-tests.outcome == 'failure'
+        shell: pwsh
+        run: |
+          Get-ChildItem build/test-results/test/*.xml | ForEach-Object {
+            [xml]$x = Get-Content $_.FullName
+            foreach ($case in $x.testsuite.testcase) {
+              if ($case.failure) {
+                $msg = ($case.failure.message -replace "`r?`n", ' ')
+                if ($msg.Length -gt 300) { $msg = $msg.Substring(0, 300) }
+                Write-Output "::warning title=Windows test failed::$($case.classname).$($case.name): $msg"
+              }
+            }
+          }
       - name: Build the MSI
         run: ./gradlew windowsInstaller --no-daemon
       - name: Build the portable app image
