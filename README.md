@@ -22,18 +22,18 @@
 | Platform | Backend | Needs |
 |---|---|---|
 | Linux / amadeOS | SANE through its command line program `scanimage` | `sudo apt install sane-utils` (a dependency of the Debian package); network scanners (eSCL/AirScan, WSD) also `sane-airscan` |
-| Windows | Windows Image Acquisition, driven through PowerShell | nothing beyond a WIA or TWAIN driver for the scanner |
+| Windows | Windows Image Acquisition over COM, inside the program (JNA) | nothing beyond a WIA or TWAIN driver for the scanner |
 
 `scanimage` is asked for the device list (`scanimage -f`), the options of the chosen scanner (`scanimage -d <device> -A`: modes, resolutions, size of the glass) and then scans with `--format=pnm --progress` to standard output. The image is decoded while it arrives, so no temporary files are needed. Check that SANE sees your scanner with `scanimage -L`.
 
 ## Architecture
 
-Java 21, Swing and Guice, built like [amade-writepad](https://github.com/datazuul/amade-writepad); theme, language and start-up come from `AmadeApplication` in amade-commons.
+Java 21, Swing and Guice (and JNA on Windows), built like [amade-writepad](https://github.com/datazuul/amade-writepad); theme, language and start-up come from `AmadeApplication` in amade-commons.
 
 - `domain`: `Scanner`, `ScanSettings` (resolution, `ColorMode`, optional `ScanArea` in millimetres), `ScannerOptions` (what a scanner offers), `ScannedImage` (pixels with their resolution), `ImageFormat`.
 - `service.scan`: `ScannerBackend` (list, options, scan), `ScanService` (runs it in the background, caches options), `ScanMonitor` (progress and cancel), `CommandRunner`/`ProcessOutput` (external programs, both output streams read at once).
   - `sane`: `SaneBackend`, `SaneOptionParser` (device list and `-A` output, maps backend mode names such as "True Gray" or "Binary"), `PnmReader` (PBM/PGM/PPM, which the JDK's ImageIO cannot read).
-  - `wia`: `WiaBackend` (PowerShell with a plain-text `-Command` on one line, without double quotes; not `-EncodedCommand`, which Windows Defender blocks as typical for malware).
+  - `wia`: `WiaBackend` and `ComWiaApi`: WIA's automation objects over COM with JNA, on one thread of their own. No PowerShell: Windows Defender blocks a script started by another program as typical for malware.
 - `service.image`: `ImageOperations` (crop, turn, mirror on the raster), `ImageCodec` (PNG/JPEG/TIFF with resolution), `ImageHistory` (undo/redo), `ImageService` (open and save in the background).
 - `service.print`: `ImagePrintable`, `PrintService`.
 - `repository`: `ImageFiles` (atomic writes), `ImagescanPreferences` (`~/.config/amadeos/imagescan/imagescan.properties`).
@@ -49,7 +49,7 @@ This replaces `EuroScan` from [euroworks](https://github.com/datazuul/euroworks)
 - One 1150-line class is split into domain, services, presenter and view; the presenter and the image models are tested without a display.
 - Mode and resolution are chosen from what the scanner offers instead of a fixed 200 dpi colour scan; preview and scan area are new.
 - Progress, cancel, undo/redo, flip, TIFF, printing, copy, opening images and the resolution in saved files are new.
-- WIA: the colour intent (property 6146) replaces the data type value 4, which was "colour threshold" rather than colour; ids and paths are quoted as PowerShell literals (a path with an apostrophe broke the old script).
+- WIA: the colour intent (property 6146) replaces the data type value 4, which was "colour threshold" rather than colour; no PowerShell scripts any more (Defender blocks them, and a path with an apostrophe broke the old one).
 - Texts in five languages and theme colours instead of German strings and fixed colours.
 
 ## Build and run
