@@ -33,7 +33,7 @@ Java 21, Swing and Guice, built like [amade-writepad](https://github.com/datazuu
 - `domain`: `Scanner`, `ScanSettings` (resolution, `ColorMode`, optional `ScanArea` in millimetres), `ScannerOptions` (what a scanner offers), `ScannedImage` (pixels with their resolution), `ImageFormat`.
 - `service.scan`: `ScannerBackend` (list, options, scan), `ScanService` (runs it in the background, caches options), `ScanMonitor` (progress and cancel), `CommandRunner`/`ProcessOutput` (external programs, both output streams read at once).
   - `sane`: `SaneBackend`, `SaneOptionParser` (device list and `-A` output, maps backend mode names such as "True Gray" or "Binary"), `PnmReader` (PBM/PGM/PPM, which the JDK's ImageIO cannot read).
-  - `wia`: `WiaBackend` (PowerShell scripts passed as `-EncodedCommand`, so ids and paths need no quoting on the command line).
+  - `wia`: `WiaBackend` (PowerShell with a plain-text `-Command` on one line, without double quotes; not `-EncodedCommand`, which Windows Defender blocks as typical for malware).
 - `service.image`: `ImageOperations` (crop, turn, mirror on the raster), `ImageCodec` (PNG/JPEG/TIFF with resolution), `ImageHistory` (undo/redo), `ImageService` (open and save in the background).
 - `service.print`: `ImagePrintable`, `PrintService`.
 - `repository`: `ImageFiles` (atomic writes), `ImagescanPreferences` (`~/.config/amadeos/imagescan/imagescan.properties`).
@@ -49,7 +49,7 @@ This replaces `EuroScan` from [euroworks](https://github.com/datazuul/euroworks)
 - One 1150-line class is split into domain, services, presenter and view; the presenter and the image models are tested without a display.
 - Mode and resolution are chosen from what the scanner offers instead of a fixed 200 dpi colour scan; preview and scan area are new.
 - Progress, cancel, undo/redo, flip, TIFF, printing, copy, opening images and the resolution in saved files are new.
-- WIA: the colour intent (property 6146) replaces the data type value 4, which was "colour threshold" rather than colour; scripts are encoded instead of quoted by hand.
+- WIA: the colour intent (property 6146) replaces the data type value 4, which was "colour threshold" rather than colour; ids and paths are quoted as PowerShell literals (a path with an apostrophe broke the old script).
 - Texts in five languages and theme colours instead of German strings and fixed colours.
 
 ## Build and run
