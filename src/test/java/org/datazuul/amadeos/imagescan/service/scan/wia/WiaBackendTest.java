@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class WiaBackendTest {
@@ -31,12 +33,16 @@ class WiaBackendTest {
         assertEquals("Canon LiDE 300", scanners.get(0).displayName());
         assertEquals("Hewlett-Packard Scanjet G3110", scanners.get(1).displayName());
         List<String> command = commands.getFirst();
-        assertEquals(List.of("powershell.exe", "-NoProfile", "-NonInteractive", "-EncodedCommand"), command.subList(0, 4));
-        assertTrue(WiaBackend.decodeScript(command).contains("WIA.DeviceManager"));
+        // Plain text, no -EncodedCommand (which Windows Defender treats as malware), no double quotes.
+        assertEquals(List.of("powershell.exe", "-NoProfile", "-NonInteractive", "-Command"), command.subList(0, 4));
+        assertEquals(5, command.size());
+        assertTrue(command.getLast().contains("WIA.DeviceManager"));
+        assertFalse(command.getLast().contains("\""));
+        assertFalse(command.getLast().contains("\n"));
     }
 
     @Test
-    void scriptQuotesIdsAndPathsAndSetsIntentFirst() {
+    void scriptQuotesIdsAndPathsAndSetsIntentFirst() throws Exception {
         ScannerOptions options = new WiaBackend().options(CANON);
         ScanSettings settings = new ScanSettings(300, ColorMode.GRAY, Optional.of(new ScanArea(25.4, 50.8, 101.6, 25.4)));
         String script = WiaBackend.scanScript(CANON, settings, options, Path.of("/tmp/O'Brien/scan.png"));
@@ -48,6 +54,13 @@ class WiaBackendTest {
         assertTrue(script.contains("Set-Prop 6150 600"), script);
         assertTrue(script.contains("Set-Prop 6151 1200"), script);
         assertTrue(script.contains("Set-Prop 6152 300"), script);
+    }
+
+    @Test
+    void refusesWhatWouldBreakTheCommandLine() {
+        Scanner odd = new Scanner("a\"b", "", "x", "");
+        assertThrows(java.io.IOException.class, () -> WiaBackend.scanScript(odd, ScanSettings.DEFAULT,
+                new WiaBackend().options(odd), Path.of("scan.png")));
     }
 
     @Test

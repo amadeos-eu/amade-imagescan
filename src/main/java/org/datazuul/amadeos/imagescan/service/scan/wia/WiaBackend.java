@@ -17,15 +17,19 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.CancellationException;
 
 /**
  * Scans on Windows through Windows Image Acquisition, driven by PowerShell. WIA ships with every Windows and
- * bridges TWAIN drivers itself. Scripts go to PowerShell as {@code -EncodedCommand}, so device ids and paths
- * need no quoting on the command line; inside the script they are single-quoted PowerShell strings.
+ * bridges TWAIN drivers itself.
+ *
+ * <p>The script goes to PowerShell as readable text after {@code -Command}, on one line, statements separated
+ * by semicolons. Not as {@code -EncodedCommand}: an encoded command started by another program is what
+ * malware does, and Windows Defender blocks it. The script uses no double quotes, so Java's quoting of the
+ * argument cannot break it; device ids and paths are single-quoted PowerShell strings, where nothing is
+ * expanded.
  */
 public class WiaBackend implements ScannerBackend {
     public static final String PROGRAM = "powershell.exe";
@@ -59,15 +63,12 @@ public class WiaBackend implements ScannerBackend {
 
     @Override
     public List<Scanner> listScanners() throws IOException, InterruptedException {
-        String script = String.join("\n",
+        String script = script(List.of(
                 "$ErrorActionPreference = 'Stop'",
                 "$wia = New-Object -ComObject WIA.DeviceManager",
-                "foreach ($d in $wia.DeviceInfos) {",
-                "  if ($d.Type -eq 1) {",
-                "    $m = ''; try { $m = $d.Properties['Manufacturer'].Value } catch {}",
-                "    Write-Output (\"{0}`t{1}`t{2}\" -f $d.DeviceID, $m, $d.Properties['Name'].Value)",
-                "  }",
-                "}");
+                "foreach ($d in $wia.DeviceInfos) { if ($d.Type -eq 1) { $m = ''; "
+                        + "try { $m = $d.Properties['Manufacturer'].Value } catch {}; "
+                        + "Write-Output ('{0}{3}{1}{3}{2}' -f $d.DeviceID, $m, $d.Properties['Name'].Value, [char]9) } }"));
         ProcessOutput.Result result = ProcessOutput.run(runner, command(script), 60, StandardCharsets.UTF_8);
         if (!result.succeeded()) throw new IOException("WIA: " + result.stderr().strip());
         return parseList(result.stdout());
@@ -98,7 +99,8 @@ public class WiaBackend implements ScannerBackend {
     }
 
     /** The PowerShell script for a scan; package access for tests. */
-    static String scanScript(Scanner scanner, ScanSettings settings, ScannerOptions options, Path output) {
+    static String scanScript(Scanner scanner, ScanSettings settings, ScannerOptions options, Path output)
+            throws IOException {
         int dpi = options.nearestResolution(settings.resolution());
         int intent = switch (settings.mode()) {
             case COLOR -> 1;
@@ -128,7 +130,7 @@ public class WiaBackend implements ScannerBackend {
         });
         lines.add("$image = $item.Transfer('" + FORMAT_PNG + "')");
         lines.add("$image.SaveFile(" + quote(output.toAbsolutePath().toString()) + ")");
-        return String.join("\n", lines);
+        return script(lines);
     }
 
     @Override
@@ -157,19 +159,21 @@ public class WiaBackend implements ScannerBackend {
         }
     }
 
+    /** One line of statements; refuses what could break the command line. */
+    static String script(List<String> statements) throws IOException {
+        String script = String.join("; ", statements);
+        if (script.contains("\"") || script.contains("\n") || script.contains("\r")) {
+            throw new IOException("Device id or path not usable with WIA: " + script);
+        }
+        return script;
+    }
+
     private static List<String> command(String script) {
-        // -EncodedCommand takes UTF-16LE in Base64.
-        String encoded = Base64.getEncoder().encodeToString(script.getBytes(StandardCharsets.UTF_16LE));
-        return List.of(PROGRAM, "-NoProfile", "-NonInteractive", "-EncodedCommand", encoded);
+        return List.of(PROGRAM, "-NoProfile", "-NonInteractive", "-Command", script);
     }
 
     /** A single-quoted PowerShell string: nothing inside is expanded, a quote is doubled. */
     static String quote(String value) {
         return "'" + value.replace("'", "''") + "'";
-    }
-
-    /** Decodes a command line built by this class; for tests. */
-    static String decodeScript(List<String> command) {
-        return new String(Base64.getDecoder().decode(command.getLast()), StandardCharsets.UTF_16LE);
     }
 }
