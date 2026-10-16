@@ -3,7 +3,7 @@
 **amade-imagescan** is the scanning program of the [amadeOS](https://github.com/datazuul/amadeos) desktop: scan photos, letters and documents from a flatbed scanner, frame the part you want, crop, turn and save.
 
 ![License](https://img.shields.io/badge/license-EUPL--1.2-blue)
-![Java](https://img.shields.io/badge/Java-21-orange)
+![Java](https://img.shields.io/badge/Java-25-orange)
 
 ## Features
 
@@ -28,7 +28,7 @@
 
 ## Architecture
 
-Java 21, Swing and Guice (and JNA on Windows), built like [amade-writepad](https://github.com/datazuul/amade-writepad); theme, language and start-up come from `AmadeApplication` in amade-commons. Packages, key decisions and flows are described in [ARCHITECTURE.md](ARCHITECTURE.md).
+Java 25, Swing and Guice (and JNA on Windows), built like [amade-writepad](https://github.com/datazuul/amade-writepad); theme, language and start-up come from `AmadeApplication` in amade-commons. Packages, key decisions and flows are described in [ARCHITECTURE.md](ARCHITECTURE.md).
 
 ## Build and run
 
