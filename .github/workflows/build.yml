@@ -27,7 +27,8 @@ jobs:
       - name: Check that the tests ran
         run: |
           count=$(grep -ho 'tests="[0-9]*"' build/test-results/test/*.xml | grep -o '[0-9]*' | paste -sd+ | bc)
-          skipped=$(grep -ho 'skipped="[0-9]*"' build/test-results/test/*.xml | grep -o '[0-9]*' | paste -sd+ | bc)
+          # ComWiaApiTest runs only on Windows and skips itself here; every other test must run.
+          skipped=$(ls build/test-results/test/*.xml | grep -v ComWiaApiTest | xargs grep -ho 'skipped="[0-9]*"' | grep -o '[0-9]*' | paste -sd+ | bc)
           echo "Tests run: $count, skipped: $skipped"
           test "$count" -ge 80
           test "$skipped" -eq 0
