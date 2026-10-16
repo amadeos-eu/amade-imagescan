@@ -1,0 +1,203 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+group = 'org.datazuul.amadeos'
+version = '0.1.0'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+application {
+    mainClass = 'org.datazuul.amadeos.imagescan.bootstrap.AmadeImagescanApplication'
+}
+
+repositories {
+    mavenCentral()
+    maven { url 'https://jitpack.io' }
+}
+
+dependencies {
+    // Theme, Motif look, start-up and XDG helpers shared by all amadeOS applications.
+    // With ../amade-commons checked out, settings.gradle builds that checkout instead (composite build).
+    implementation 'com.github.datazuul:amade-commons:368124c665'
+    runtimeOnly 'ch.qos.logback:logback-classic:1.5.18'
+    testImplementation platform('org.junit:junit-bom:5.10.2')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+test {
+    useJUnitPlatform()
+    // Tests compare English texts, whatever the language of the build machine.
+    systemProperty 'user.language', 'en'
+    systemProperty 'user.country', 'US'
+}
+
+jar {
+    archiveBaseName = 'amade-imagescan'
+    manifest {
+        attributes(
+            'Main-Class': 'org.datazuul.amadeos.imagescan.bootstrap.AmadeImagescanApplication',
+            'Implementation-Title': 'amade-imagescan',
+            'Implementation-Version': project.version
+        )
+    }
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    // Signed dependency jars would otherwise invalidate the fat jar.
+    exclude 'META-INF/*.SF', 'META-INF/*.DSA', 'META-INF/*.RSA'
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+tasks.register('deb') {
+    dependsOn jar
+    description = 'Builds a standard Debian (.deb) package for amade-imagescan'
+    group = 'distribution'
+
+    doLast {
+        def buildDirFile = layout.buildDirectory.get().asFile
+        def stagingDir = new File(buildDirFile, 'deb-staging')
+        delete(stagingDir)
+
+        def optDir = new File(stagingDir, 'opt/amade-imagescan')
+        def binDir = new File(stagingDir, 'usr/bin')
+        def appDir = new File(stagingDir, 'usr/share/applications')
+        def iconDir = new File(stagingDir, 'usr/share/icons/hicolor/48x48/apps')
+        def docDir = new File(stagingDir, 'usr/share/doc/amade-imagescan')
+        def debianDir = new File(stagingDir, 'DEBIAN')
+        def distDir = new File(buildDirFile, 'distributions')
+        [optDir, binDir, appDir, iconDir, docDir, debianDir, distDir]*.mkdirs()
+
+        copy {
+            from jar.archiveFile
+            into optDir
+            rename { 'amade-imagescan.jar' }
+        }
+
+        def launcher = new File(binDir, 'amade-imagescan')
+        launcher.text = """#!/bin/sh
+exec /usr/bin/java -jar /opt/amade-imagescan/amade-imagescan.jar "\$@"
+"""
+        launcher.setExecutable(true, false)
+
+        copy {
+            from 'packaging/amade-imagescan.desktop'
+            into appDir
+        }
+        copy {
+            from 'src/main/resources/icons/amade-imagescan.png'
+            into iconDir
+        }
+        copy {
+            from 'LICENSE'
+            into docDir
+            rename { 'copyright' }
+        }
+
+        new File(debianDir, 'control').text = """Package: amade-imagescan
+Version: ${project.version}
+Section: graphics
+Priority: optional
+Architecture: all
+Depends: default-jre | openjdk-21-jre | java21-runtime, sane-utils
+Recommends: sane-airscan
+Maintainer: amadeOS Project <developers@datazuul.com>
+Description: Scanning program for flatbed scanners on amadeOS
+ Scans from flatbed scanners through SANE: a quick preview of the whole
+ glass, a frame around the part to scan, then the scan at the resolution
+ and colour mode chosen. Crops, rotates and flips the result and saves it
+ as PNG, JPEG or TIFF with its resolution, or prints it. Part of the
+ amadeOS desktop.
+"""
+
+        def debFile = new File(distDir, "amade-imagescan_${project.version}_all.deb")
+        def process = new ProcessBuilder('dpkg-deb', '--root-owner-group', '--build',
+                stagingDir.absolutePath, debFile.absolutePath)
+                .redirectErrorStream(true)
+                .start()
+        process.inputStream.eachLine { println it }
+        if (process.waitFor() != 0) {
+            throw new GradleException('dpkg-deb failed')
+        }
+        println "[deb] Created ${debFile.absolutePath}"
+    }
+}
+
+tasks.register('installToAmadeOs') {
+    dependsOn 'deb'
+    description = 'Builds and drops the .deb package into ../amadeos/config/packages.chroot/'
+    group = 'distribution'
+
+    doLast {
+        def targetDir = file('../amadeos/config/packages.chroot')
+        targetDir.mkdirs()
+        def debFile = new File(layout.buildDirectory.get().asFile, "distributions/amade-imagescan_${project.version}_all.deb")
+        copy {
+            from debFile
+            into targetDir
+        }
+        println "[installToAmadeOs] Copied ${debFile.name} to ${targetDir.absolutePath}"
+    }
+}
+
+// Windows installer with jpackage: the fat jar plus a Java runtime, so Windows users need no Java.
+// jpackage builds Windows packages only on Windows; MSI and EXE also need WiX Toolset 3 on the PATH.
+//   ./gradlew windowsInstaller                           (MSI; output in build/windows/<type>/)
+//   ./gradlew windowsInstaller -PinstallerType=exe       (setup .exe)
+//   ./gradlew windowsInstaller -PinstallerType=app-image (folder with amade-imagescan.exe, no WiX needed)
+tasks.register('windowsInstaller') {
+    dependsOn jar
+    description = 'Builds a Windows installer (MSI, EXE or app image) with jpackage'
+    group = 'distribution'
+
+    def jdk = javaToolchains.launcherFor { languageVersion = java.toolchain.languageVersion }
+    doLast {
+        if (!System.getProperty('os.name').startsWith('Windows')) {
+            throw new GradleException('jpackage builds Windows packages only on Windows')
+        }
+        def type = project.findProperty('installerType') ?: 'msi'
+        def buildDirFile = layout.buildDirectory.get().asFile
+        // jpackage bundles everything in --input, so give it a folder with just the fat jar.
+        def inputDir = new File(buildDirFile, 'jpackage-input')
+        def destDir = new File(buildDirFile, "windows/$type")
+        delete(inputDir, destDir)
+        copy {
+            from jar.archiveFile
+            into inputDir
+        }
+
+        def jpackage = jdk.get().metadata.installationPath.file('bin/jpackage.exe').asFile
+        def args = [jpackage.absolutePath,
+                    '--type', type,
+                    '--name', 'amade-imagescan',
+                    // MSI versions are numeric only: 0.1.0-SNAPSHOT becomes 0.1.0
+                    '--app-version', project.version.toString().replaceAll(/[^0-9.].*$/, ''),
+                    '--vendor', 'datazuul',
+                    '--description', 'Scanning program for flatbed scanners',
+                    '--copyright', 'datazuul, licensed under the EUPL-1.2',
+                    '--input', inputDir.absolutePath,
+                    '--main-jar', jar.archiveFile.get().asFile.name,
+                    '--main-class', application.mainClass.get(),
+                    '--icon', file('packaging/windows/amade-imagescan.ico').absolutePath,
+                    '--dest', destDir.absolutePath]
+        if (type != 'app-image') {
+            args += ['--win-menu', '--win-menu-group', 'amadeOS', '--win-shortcut', '--win-dir-chooser',
+                     '--license-file', file('LICENSE').absolutePath,
+                     // Never change: lets a newer installer replace an installed version.
+                     '--win-upgrade-uuid', 'c4ea6142-21dd-4444-ae5f-e0ec92f4a49d']
+        }
+
+        def process = new ProcessBuilder(args).redirectErrorStream(true).start()
+        process.inputStream.eachLine { println it }
+        if (process.waitFor() != 0) {
+            throw new GradleException('jpackage failed')
+        }
+        destDir.eachFile { println "[windowsInstaller] Created ${it.absolutePath}" }
+    }
+}

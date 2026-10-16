@@ -1,0 +1,25 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=amadeOS Image Scan
+Name[de]=amadeOS Bild scannen
+Name[fr]=amadeOS Numérisation
+Name[es]=amadeOS Escanear imagen
+Name[it]=amadeOS Scansione immagini
+GenericName=Scanner
+GenericName[de]=Scanner
+GenericName[fr]=Numériseur
+GenericName[es]=Escáner
+GenericName[it]=Scanner
+Comment=Scan images and documents from a flatbed scanner
+Comment[de]=Bilder und Dokumente mit dem Flachbettscanner einlesen
+Comment[fr]=Numériser des images et des documents avec un scanner à plat
+Comment[es]=Escanear imágenes y documentos con un escáner plano
+Comment[it]=Acquisire immagini e documenti con uno scanner piano
+Icon=amade-imagescan
+Exec=/usr/bin/amade-imagescan %F
+Terminal=false
+Categories=Graphics;Scanning;
+MimeType=image/png;image/jpeg;image/tiff;
+Keywords=scan;scanner;flatbed;sane;image;photo;document;
+StartupNotify=true
