@@ -1,6 +1,6 @@
 # amade-imagescan – Architecture
 
-Scanning program for flatbed scanners on amadeOS. Java 21, Swing, Guice, [amade-commons](https://github.com/datazuul/amade-commons). Gradle, EUPL-1.2.
+Scanning program for flatbed scanners on amadeOS. Java 25, Swing, Guice, [amade-commons](https://github.com/datazuul/amade-commons). Gradle, EUPL-1.2.
 
 Packaging:
 - Debian package: depends on `sane-utils`, recommends `sane-airscan`.

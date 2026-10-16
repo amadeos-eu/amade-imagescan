@@ -16,7 +16,7 @@ jobs:
       - uses: actions/setup-java@v6
         with:
           distribution: temurin
-          java-version: '21'
+          java-version: '25'
       - uses: gradle/actions/setup-gradle@v6
         with:
           # Plain actions/cache instead of the proprietary enhanced cache that is the v6 default.
@@ -27,7 +27,8 @@ jobs:
       - name: Check that the tests ran
         run: |
           count=$(grep -ho 'tests="[0-9]*"' build/test-results/test/*.xml | grep -o '[0-9]*' | paste -sd+ | bc)
-          skipped=$(grep -ho 'skipped="[0-9]*"' build/test-results/test/*.xml | grep -o '[0-9]*' | paste -sd+ | bc)
+          # ComWiaApiTest runs only on Windows and skips itself here; every other test must run.
+          skipped=$(ls build/test-results/test/*.xml | grep -v ComWiaApiTest | xargs grep -ho 'skipped="[0-9]*"' | grep -o '[0-9]*' | paste -sd+ | bc)
           echo "Tests run: $count, skipped: $skipped"
           test "$count" -ge 80
           test "$skipped" -eq 0
@@ -66,11 +67,11 @@ jobs:
       - uses: actions/setup-java@v6
         with:
           distribution: temurin
-          java-version: '21'
+          java-version: '25'
       - uses: gradle/actions/setup-gradle@v6
         with:
           cache-provider: basic
-      # jpackage needs WiX Toolset 3 for MSI (JDK 21 does not support WiX 4/5).
+      # jpackage needs the WiX Toolset for MSI; CI installs WiX 3 (JDK 25 also takes WiX 4/5).
       - name: Install WiX Toolset 3
         shell: pwsh
         run: |
