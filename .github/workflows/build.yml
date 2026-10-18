@@ -38,7 +38,7 @@ jobs:
         run: |
           jar=$(ls build/libs/amade-imagescan-*.jar)
           unzip -l "$jar" icons/amade-imagescan.png
-          unzip -p "$jar" META-INF/MANIFEST.MF | grep -q 'Main-Class: org.datazuul.amadeos.imagescan'
+          unzip -p "$jar" META-INF/MANIFEST.MF | grep -q 'Main-Class: eu.amadeos.apps.imagescan'
           deb=$(ls build/distributions/amade-imagescan_*_all.deb)
           dpkg-deb --info "$deb"
           dpkg-deb --contents "$deb" > contents.txt

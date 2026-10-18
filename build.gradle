@@ -3,7 +3,7 @@ plugins {
     id 'application'
 }
 
-group = 'org.datazuul.amadeos'
+group = 'eu.amadeos'
 version = '0.1.0'
 
 java {
@@ -13,7 +13,7 @@ java {
 }
 
 application {
-    mainClass = 'org.datazuul.amadeos.imagescan.bootstrap.AmadeImagescanApplication'
+    mainClass = 'eu.amadeos.apps.imagescan.bootstrap.AmadeImagescanApplication'
 }
 
 repositories {
@@ -24,7 +24,7 @@ repositories {
 dependencies {
     // Theme, Motif look, start-up and XDG helpers shared by all amadeOS applications.
     // With ../amade-commons checked out, settings.gradle builds that checkout instead (composite build).
-    implementation 'com.github.datazuul:amade-commons:391b2c9900'
+    implementation 'com.github.datazuul:amade-commons:78466adc6e'
     // Windows only: WIA over COM, in the process instead of through PowerShell (which Defender blocks).
     implementation 'net.java.dev.jna:jna-platform:5.17.0'
     runtimeOnly 'ch.qos.logback:logback-classic:1.5.18'
@@ -44,7 +44,7 @@ jar {
     archiveBaseName = 'amade-imagescan'
     manifest {
         attributes(
-            'Main-Class': 'org.datazuul.amadeos.imagescan.bootstrap.AmadeImagescanApplication',
+            'Main-Class': 'eu.amadeos.apps.imagescan.bootstrap.AmadeImagescanApplication',
             'Implementation-Title': 'amade-imagescan',
             'Implementation-Version': project.version
         )
