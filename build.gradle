@@ -13,7 +13,7 @@ java {
 }
 
 application {
-    mainClass = 'eu.amadeos.imagescan.bootstrap.AmadeImagescanApplication'
+    mainClass = 'eu.amadeos.apps.imagescan.bootstrap.AmadeImagescanApplication'
 }
 
 repositories {
@@ -44,7 +44,7 @@ jar {
     archiveBaseName = 'amade-imagescan'
     manifest {
         attributes(
-            'Main-Class': 'eu.amadeos.imagescan.bootstrap.AmadeImagescanApplication',
+            'Main-Class': 'eu.amadeos.apps.imagescan.bootstrap.AmadeImagescanApplication',
             'Implementation-Title': 'amade-imagescan',
             'Implementation-Version': project.version
         )
