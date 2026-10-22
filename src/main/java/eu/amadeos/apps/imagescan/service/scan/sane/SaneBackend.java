@@ -1,14 +1,14 @@
 package eu.amadeos.apps.imagescan.service.scan.sane;
 
 import com.google.inject.Inject;
+import eu.amadeos.commons.process.CommandRunner;
+import eu.amadeos.commons.process.ProgramResult;
 import eu.amadeos.apps.imagescan.domain.ColorMode;
 import eu.amadeos.apps.imagescan.domain.ScanArea;
 import eu.amadeos.apps.imagescan.domain.ScanSettings;
 import eu.amadeos.apps.imagescan.domain.Scanner;
 import eu.amadeos.apps.imagescan.domain.ScannerOptions;
 import eu.amadeos.apps.imagescan.service.image.ImageOperations;
-import eu.amadeos.apps.imagescan.service.scan.CommandRunner;
-import eu.amadeos.apps.imagescan.service.scan.ProcessOutput;
 import eu.amadeos.apps.imagescan.service.scan.ScanMonitor;
 import eu.amadeos.apps.imagescan.service.scan.ScannerBackend;
 import org.slf4j.Logger;
@@ -21,6 +21,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -39,8 +40,8 @@ public class SaneBackend implements ScannerBackend {
     public static final String PROGRAM = "scanimage";
     private static final Pattern PROGRESS = Pattern.compile("Progress:\\s*(\\d+(?:\\.\\d+)?)%");
     /** Network scanners (eSCL, WSD) can take a while to be found. */
-    private static final long LIST_TIMEOUT_SECONDS = 60;
-    private static final long OPTIONS_TIMEOUT_SECONDS = 30;
+    private static final Duration LIST_TIMEOUT = Duration.ofSeconds(60);
+    private static final Duration OPTIONS_TIMEOUT = Duration.ofSeconds(30);
 
     private final CommandRunner runner;
 
@@ -58,32 +59,34 @@ public class SaneBackend implements ScannerBackend {
         return "SANE";
     }
 
+    // --8<-- [start:list]
     @Override
     public List<Scanner> listScanners() throws IOException, InterruptedException {
         String format = String.join(SaneOptionParser.SEPARATOR, "%d", "%v", "%m", "%t") + "%n";
-        ProcessOutput.Result result = ProcessOutput.run(runner, List.of(PROGRAM, "-f", format),
-                LIST_TIMEOUT_SECONDS, StandardCharsets.UTF_8);
+        ProgramResult result = runner.run(List.of(PROGRAM, "-f", format), LIST_TIMEOUT);
         if (!result.succeeded()) {
-            throw new IOException(PROGRAM + " -f: " + errorText(result.stderr(), result.exitCode()));
+            throw new IOException(PROGRAM + " -f: " + errorText(result.stderrText(), result.exitCode()));
         }
-        List<Scanner> scanners = SaneOptionParser.parseDeviceList(result.stdout());
-        if (scanners.isEmpty() && result.stdout().contains("device `")) {
+        String list = result.stdoutText();
+        List<Scanner> scanners = SaneOptionParser.parseDeviceList(list);
+        if (scanners.isEmpty() && list.contains("device `")) {
             // A scanimage without -f printed the classic list instead.
-            scanners = SaneOptionParser.parseLegacyList(result.stdout());
+            scanners = SaneOptionParser.parseLegacyList(list);
         }
         return scanners;
     }
+    // --8<-- [end:list]
 
     @Override
     public ScannerOptions options(Scanner scanner) throws IOException, InterruptedException {
-        ProcessOutput.Result result = ProcessOutput.run(runner, List.of(PROGRAM, "-d", scanner.id(), "-A"),
-                OPTIONS_TIMEOUT_SECONDS, StandardCharsets.UTF_8);
+        ProgramResult result = runner.run(List.of(PROGRAM, "-d", scanner.id(), "-A"), OPTIONS_TIMEOUT);
         if (!result.succeeded()) {
-            throw new IOException(PROGRAM + " -A: " + errorText(result.stderr(), result.exitCode()));
+            throw new IOException(PROGRAM + " -A: " + errorText(result.stderrText(), result.exitCode()));
         }
-        return SaneOptionParser.parseOptions(result.stdout());
+        return SaneOptionParser.parseOptions(result.stdoutText());
     }
 
+    // --8<-- [start:scan-command]
     /** The command line for a scan; public for tests. */
     public static List<String> scanCommand(Scanner scanner, ScanSettings settings, ScannerOptions options) {
         List<String> command = new ArrayList<>(List.of(PROGRAM, "-d", scanner.id(), "--format=pnm", "--progress"));
@@ -99,23 +102,20 @@ public class SaneBackend implements ScannerBackend {
         });
         return command;
     }
+    // --8<-- [end:scan-command]
 
     private static String mm(double value) {
         return String.format(Locale.ROOT, "%.1fmm", value);
     }
 
+    // --8<-- [start:scan]
     @Override
     public BufferedImage scan(Scanner scanner, ScanSettings settings, ScannerOptions options, ScanMonitor monitor)
             throws IOException, InterruptedException {
         monitor.checkCancelled();
         List<String> command = scanCommand(scanner, settings, options);
         LOG.info("Scanning: {}", String.join(" ", command));
-        Process process;
-        try {
-            process = runner.start(command);
-        } catch (IOException e) {
-            throw ProcessOutput.missing(PROGRAM, e);
-        }
+        Process process = runner.start(command);
         monitor.onCancel(process::destroy);
         process.getOutputStream().close();
         monitor.progress(ScanMonitor.UNKNOWN);
@@ -147,6 +147,7 @@ public class SaneBackend implements ScannerBackend {
         }
         return image;
     }
+    // --8<-- [end:scan]
 
     static BufferedImage cropToArea(BufferedImage image, ScanArea area, int dpi) {
         double px = dpi / ScanArea.MM_PER_INCH;
@@ -164,6 +165,7 @@ public class SaneBackend implements ScannerBackend {
         return process.exitValue();
     }
 
+    // --8<-- [start:progress]
     /** Splits standard error at carriage returns and newlines: progress lines, everything else kept. */
     static void readProgress(InputStream err, ScanMonitor monitor, ByteArrayOutputStream other) {
         StringBuilder line = new StringBuilder();
@@ -182,6 +184,7 @@ public class SaneBackend implements ScannerBackend {
             // The process was stopped.
         }
     }
+    // --8<-- [end:progress]
 
     private static void handleLine(String line, ScanMonitor monitor, ByteArrayOutputStream other) {
         if (line.isBlank()) return;

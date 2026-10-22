@@ -1,5 +1,6 @@
 package eu.amadeos.apps.imagescan.service.scan.sane;
 
+import eu.amadeos.commons.process.ProgramMissingException;
 import eu.amadeos.apps.imagescan.FakeProcess;
 import eu.amadeos.apps.imagescan.TestImages;
 import eu.amadeos.apps.imagescan.domain.ColorMode;
@@ -7,7 +8,6 @@ import eu.amadeos.apps.imagescan.domain.ScanArea;
 import eu.amadeos.apps.imagescan.domain.ScanSettings;
 import eu.amadeos.apps.imagescan.domain.Scanner;
 import eu.amadeos.apps.imagescan.domain.ScannerOptions;
-import eu.amadeos.apps.imagescan.service.scan.BackendMissingException;
 import eu.amadeos.apps.imagescan.service.scan.ScanMonitor;
 import org.junit.jupiter.api.Test;
 
@@ -54,14 +54,18 @@ class SaneBackendTest {
         assertEquals("test:0", backend.listScanners().getFirst().id());
     }
 
+    // --8<-- [start:missing]
     @Test
     void reportsAMissingScanimage() {
         SaneBackend backend = new SaneBackend(command -> {
-            throw new IOException("Cannot run program \"scanimage\": error=2, No such file or directory");
+            // what CommandRunner.system() makes of the JDK's error
+            throw ProgramMissingException.check("scanimage",
+                    new IOException("Cannot run program \"scanimage\": error=2, No such file or directory"));
         });
-        BackendMissingException e = assertThrows(BackendMissingException.class, backend::listScanners);
+        ProgramMissingException e = assertThrows(ProgramMissingException.class, backend::listScanners);
         assertEquals("scanimage", e.program());
     }
+    // --8<-- [end:missing]
 
     @Test
     void readsTheOptions() throws Exception {
@@ -107,6 +111,7 @@ class SaneBackendTest {
         assertEquals("scanimage: open of device epson2:libusb:001:004 failed: Device busy", e.getMessage());
     }
 
+    // --8<-- [start:cancel]
     @Test
     void cancelStopsScanimage() throws Exception {
         FakeProcess process = FakeProcess.hanging("P6 100 100 255\n".getBytes());
@@ -125,6 +130,7 @@ class SaneBackendTest {
         assertInstanceOf(CancellationException.class, e.getCause());
         assertTrue(process.isDestroyed());
     }
+    // --8<-- [end:cancel]
 
     @Test
     void cropsAfterwardsWithoutMillimetreGeometry() {

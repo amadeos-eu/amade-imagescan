@@ -43,6 +43,7 @@ public final class ImageHistory {
         return Optional.ofNullable(current);
     }
 
+    // --8<-- [start:push]
     /** Records an edit: the old image can be brought back, what was undone before cannot be redone. */
     public void push(ScannedImage edited) {
         Objects.requireNonNull(edited, "edited");
@@ -68,6 +69,7 @@ public final class ImageHistory {
         current = undo.pop();
         return Optional.of(current);
     }
+    // --8<-- [end:push]
 
     public Optional<ScannedImage> redo() {
         if (redo.isEmpty()) return Optional.empty();

@@ -1,9 +1,11 @@
 package eu.amadeos.apps.imagescan.ui.main;
 
 import com.google.inject.Inject;
+import eu.amadeos.commons.app.Ui;
 import eu.amadeos.commons.i18n.Language;
 import eu.amadeos.commons.i18n.LocaleSettings;
 import eu.amadeos.commons.i18n.Messages;
+import eu.amadeos.commons.process.ProgramMissingException;
 import eu.amadeos.apps.imagescan.domain.ColorMode;
 import eu.amadeos.apps.imagescan.domain.ImageFormat;
 import eu.amadeos.apps.imagescan.domain.ScanArea;
@@ -16,7 +18,6 @@ import eu.amadeos.apps.imagescan.repository.ImagescanPreferences.Bar;
 import eu.amadeos.apps.imagescan.service.image.ImageHistory;
 import eu.amadeos.apps.imagescan.service.image.ImageOperations;
 import eu.amadeos.apps.imagescan.service.image.ImageService;
-import eu.amadeos.apps.imagescan.service.scan.BackendMissingException;
 import eu.amadeos.apps.imagescan.service.scan.ScanMonitor;
 import eu.amadeos.apps.imagescan.service.scan.ScanService;
 import org.slf4j.Logger;
@@ -222,7 +223,7 @@ public final class MainPresenter {
                 scanners = List.of();
                 scanner = null;
                 view.showScanners(scanners, Optional.empty());
-                if (cause instanceof BackendMissingException missing) {
+                if (cause instanceof ProgramMissingException missing) {
                     view.showStatus(msg.get("status.no-backend"));
                     view.showError(msg.format("error.backend-missing", missing.program()));
                 } else {
@@ -294,6 +295,7 @@ public final class MainPresenter {
 
     // ---------------------------------------------------------------- scanning
 
+    // --8<-- [start:scan-area]
     /** The frame in the preview as part of the glass; empty for the whole glass. */
     Optional<ScanArea> scanArea() {
         if (kind != ImageKind.PREVIEW || selection.isEmpty()) return Optional.empty();
@@ -302,6 +304,7 @@ public final class MainPresenter {
         ScanArea area = ScanArea.fromPixels(r.x, r.y, r.width, r.height, preview.resolution());
         return Optional.of(options.hasGlassSize() ? area.clampTo(options.maxWidth(), options.maxHeight()) : area);
     }
+    // --8<-- [end:scan-area]
 
     private int effectiveResolution() {
         return options.nearestResolution(settings.resolution());
@@ -365,6 +368,7 @@ public final class MainPresenter {
         return scanner != null && optionsReady && running == null && !busy;
     }
 
+    // --8<-- [start:start-scan]
     private void startScan(ScanSettings scanSettings, boolean isPreview) {
         Scanner device = scanner;
         int dpi = options.nearestResolution(scanSettings.resolution());
@@ -403,6 +407,7 @@ public final class MainPresenter {
             }
         }, ui);
     }
+    // --8<-- [end:start-scan]
 
     /** Stops the running scan; the image shown before stays. */
     public void cancelScan() {
@@ -476,6 +481,7 @@ public final class MainPresenter {
         edit(ImageOperations::flipVertical, "status.flipped");
     }
 
+    // --8<-- [start:edit]
     /** Runs an edit in the background; the result becomes a new step of the history. */
     private void edit(UnaryOperator<BufferedImage> operation, String statusKey) {
         if (!editable() || busy || running != null) return;
@@ -500,6 +506,7 @@ public final class MainPresenter {
                     updateCommands();
                 }, ui);
     }
+    // --8<-- [end:edit]
 
     public void undo() {
         if (!editable() || busy || running != null) return;

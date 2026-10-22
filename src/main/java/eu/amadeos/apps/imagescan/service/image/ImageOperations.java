@@ -15,6 +15,7 @@ public final class ImageOperations {
     private ImageOperations() {
     }
 
+    // --8<-- [start:crop]
     /** The part of the image inside the rectangle, cut down to the image. */
     public static BufferedImage crop(BufferedImage source, Rectangle area) {
         Rectangle r = area.intersection(new Rectangle(source.getWidth(), source.getHeight()));
@@ -24,13 +25,16 @@ public final class ImageOperations {
         target.getRaster().setRect(part);
         return target;
     }
+    // --8<-- [end:crop]
 
+    // --8<-- [start:rotate]
     /** A quarter turn to the right. */
     public static BufferedImage rotateClockwise(BufferedImage source) {
         int w = source.getWidth();
         int h = source.getHeight();
         return transform(source, h, w, (x, y) -> h - 1 - y, (x, y) -> x);
     }
+    // --8<-- [end:rotate]
 
     /** A quarter turn to the left. */
     public static BufferedImage rotateCounterClockwise(BufferedImage source) {
@@ -58,6 +62,7 @@ public final class ImageOperations {
         return transform(source, source.getWidth(), h, (x, y) -> x, (x, y) -> h - 1 - y);
     }
 
+    // --8<-- [start:transform]
     /** An empty image of the same kind (colour model, bit depth, palette). */
     static BufferedImage blank(BufferedImage source, int width, int height) {
         ColorModel model = source.getColorModel();
@@ -88,4 +93,5 @@ public final class ImageOperations {
         }
         return target;
     }
+    // --8<-- [end:transform]
 }

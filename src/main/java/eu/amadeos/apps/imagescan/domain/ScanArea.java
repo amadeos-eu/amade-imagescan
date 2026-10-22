@@ -29,6 +29,7 @@ public record ScanArea(double left, double top, double width, double height) {
         return new ScanArea(l, t, w, h);
     }
 
+    // --8<-- [start:from-pixels]
     /**
      * The area a rectangle of pixels covers in an image scanned with the given resolution from the top left
      * corner of the glass (a preview).
@@ -37,6 +38,7 @@ public record ScanArea(double left, double top, double width, double height) {
         double mmPerPixel = MM_PER_INCH / dpi;
         return new ScanArea(x * mmPerPixel, y * mmPerPixel, width * mmPerPixel, height * mmPerPixel);
     }
+    // --8<-- [end:from-pixels]
 
     /** Size in pixels at the given resolution, as the scanner will deliver it (roughly). */
     public long pixels(int dpi) {

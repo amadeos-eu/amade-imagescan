@@ -2,8 +2,10 @@ package eu.amadeos.apps.imagescan.ui.main;
 
 import eu.amadeos.commons.i18n.Messages;
 import eu.amadeos.commons.i18n.Mnemonics;
-import eu.amadeos.apps.imagescan.ui.icons.ToolIcon;
-import eu.amadeos.apps.imagescan.ui.icons.ToolIcon.Glyph;
+import eu.amadeos.commons.swing.StandardGlyph;
+import eu.amadeos.commons.swing.ToolIcon;
+import eu.amadeos.commons.swing.ToolIcon.Glyph;
+import eu.amadeos.apps.imagescan.ui.icons.ImagescanGlyph;
 import eu.amadeos.apps.imagescan.ui.view.ImageView;
 
 import javax.swing.AbstractAction;
@@ -51,30 +53,36 @@ public final class ScanActions {
 
     public ScanActions(MainPresenter presenter, ImageView view, Messages msg) {
         this.msg = msg;
-        open = action("menu.file.open", Glyph.OPEN, KeyEvent.VK_O, CTRL, presenter::chooseOpen);
-        save = action("menu.file.save", Glyph.SAVE, KeyEvent.VK_S, CTRL, presenter::save);
+        open = action("menu.file.open", StandardGlyph.OPEN, KeyEvent.VK_O, CTRL, presenter::chooseOpen);
+        save = action("menu.file.save", StandardGlyph.SAVE, KeyEvent.VK_S, CTRL, presenter::save);
         saveAs = action("menu.file.save-as", null, KeyEvent.VK_S, CTRL | SHIFT, presenter::saveAs);
-        print = action("menu.file.print", Glyph.PRINT, KeyEvent.VK_P, CTRL, presenter::print);
+        print = action("menu.file.print", StandardGlyph.PRINT, KeyEvent.VK_P, CTRL, presenter::print);
         exit = action("menu.file.exit", null, KeyEvent.VK_Q, CTRL, presenter::exit);
-        undo = action("menu.edit.undo", Glyph.UNDO, KeyEvent.VK_Z, CTRL, presenter::undo);
-        redo = action("menu.edit.redo", Glyph.REDO, KeyEvent.VK_Y, CTRL, presenter::redo);
+        undo = action("menu.edit.undo", StandardGlyph.UNDO, KeyEvent.VK_Z, CTRL, presenter::undo);
+        redo = action("menu.edit.redo", StandardGlyph.REDO, KeyEvent.VK_Y, CTRL, presenter::redo);
         copy = action("menu.edit.copy", null, KeyEvent.VK_C, CTRL, presenter::copy);
         selectAll = action("menu.edit.select-all", null, KeyEvent.VK_A, CTRL, view::selectAll);
         clearSelection = action("menu.edit.select-none", null, KeyEvent.VK_ESCAPE, 0, view::clearSelection);
-        crop = action("menu.image.crop", Glyph.CROP, KeyEvent.VK_X, CTRL | SHIFT, presenter::crop);
-        rotateLeft = action("menu.image.rotate-left", Glyph.ROTATE_LEFT, KeyEvent.VK_L, CTRL, presenter::rotateLeft);
-        rotateRight = action("menu.image.rotate-right", Glyph.ROTATE_RIGHT, KeyEvent.VK_R, CTRL, presenter::rotateRight);
+        // --8<-- [start:actions]
+        crop = action("menu.image.crop", ImagescanGlyph.CROP, KeyEvent.VK_X, CTRL | SHIFT, presenter::crop);
+        rotateLeft = action("menu.image.rotate-left", ImagescanGlyph.ROTATE_LEFT, KeyEvent.VK_L, CTRL,
+                presenter::rotateLeft);
+        rotateRight = action("menu.image.rotate-right", ImagescanGlyph.ROTATE_RIGHT, KeyEvent.VK_R, CTRL,
+                presenter::rotateRight);
         rotate180 = action("menu.image.rotate-180", null, 0, 0, presenter::rotate180);
-        flipHorizontal = action("menu.image.flip-horizontal", Glyph.FLIP_HORIZONTAL, 0, 0, presenter::flipHorizontal);
-        flipVertical = action("menu.image.flip-vertical", Glyph.FLIP_VERTICAL, 0, 0, presenter::flipVertical);
-        preview = action("menu.scan.preview", Glyph.PREVIEW, KeyEvent.VK_F7, 0, presenter::preview);
-        scan = action("menu.scan.scan", Glyph.SCAN, KeyEvent.VK_F8, 0, presenter::scan);
-        cancel = action("menu.scan.cancel", Glyph.CANCEL, KeyEvent.VK_PERIOD, CTRL, presenter::cancelScan);
-        refresh = action("menu.scan.refresh", Glyph.REFRESH, KeyEvent.VK_F5, 0, presenter::refreshScanners);
-        zoomIn = action("menu.view.zoom-in", Glyph.ZOOM_IN, KeyEvent.VK_PLUS, CTRL, view::zoomIn);
-        zoomOut = action("menu.view.zoom-out", Glyph.ZOOM_OUT, KeyEvent.VK_MINUS, CTRL, view::zoomOut);
-        zoomFit = action("menu.view.zoom-fit", Glyph.ZOOM_FIT, KeyEvent.VK_0, CTRL, view::zoomToFit);
-        zoomActual = action("menu.view.zoom-actual", Glyph.ZOOM_ACTUAL, KeyEvent.VK_1, CTRL, view::zoomActualSize);
+        flipHorizontal = action("menu.image.flip-horizontal", ImagescanGlyph.FLIP_HORIZONTAL, 0, 0,
+                presenter::flipHorizontal);
+        flipVertical = action("menu.image.flip-vertical", ImagescanGlyph.FLIP_VERTICAL, 0, 0, presenter::flipVertical);
+        preview = action("menu.scan.preview", ImagescanGlyph.PREVIEW, KeyEvent.VK_F7, 0, presenter::preview);
+        scan = action("menu.scan.scan", ImagescanGlyph.SCAN, KeyEvent.VK_F8, 0, presenter::scan);
+        cancel = action("menu.scan.cancel", ImagescanGlyph.CANCEL, KeyEvent.VK_PERIOD, CTRL, presenter::cancelScan);
+        refresh = action("menu.scan.refresh", StandardGlyph.REFRESH, KeyEvent.VK_F5, 0, presenter::refreshScanners);
+        zoomIn = action("menu.view.zoom-in", StandardGlyph.ZOOM_IN, KeyEvent.VK_PLUS, CTRL, view::zoomIn);
+        // --8<-- [end:actions]
+        zoomOut = action("menu.view.zoom-out", StandardGlyph.ZOOM_OUT, KeyEvent.VK_MINUS, CTRL, view::zoomOut);
+        zoomFit = action("menu.view.zoom-fit", ImagescanGlyph.ZOOM_FIT, KeyEvent.VK_0, CTRL, view::zoomToFit);
+        zoomActual = action("menu.view.zoom-actual", ImagescanGlyph.ZOOM_ACTUAL, KeyEvent.VK_1, CTRL,
+                view::zoomActualSize);
         update(new MainView.Commands(false, false, false, false, false, false, false, false));
     }
 

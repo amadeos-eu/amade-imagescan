@@ -32,6 +32,7 @@ public final class ScanMonitor {
         progressListener.accept(fraction < 0 ? UNKNOWN : Math.min(1, fraction));
     }
 
+    // --8<-- [start:cancel]
     /** Runs the action on {@link #cancel}, or at once if the scan was already cancelled. */
     public void onCancel(Runnable action) {
         boolean now;
@@ -52,6 +53,7 @@ public final class ScanMonitor {
         }
         actions.forEach(Runnable::run);
     }
+    // --8<-- [end:cancel]
 
     public synchronized boolean isCancelled() {
         return cancelled;

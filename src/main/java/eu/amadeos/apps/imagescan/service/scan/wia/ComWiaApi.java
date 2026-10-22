@@ -102,6 +102,7 @@ public final class ComWiaApi implements WiaApi {
         T run() throws IOException;
     }
 
+    // --8<-- [start:com-thread]
     private <T> T onComThread(ComWork<T> work) throws IOException {
         Callable<T> task = () -> {
             initialize();
@@ -126,6 +127,7 @@ public final class ComWiaApi implements WiaApi {
             throw new IOException(String.valueOf(cause), cause);
         }
     }
+    // --8<-- [end:com-thread]
 
     /** Joins the multithreaded apartment once; WIA's objects then live in an apartment COM picks. */
     private void initialize() throws IOException {
