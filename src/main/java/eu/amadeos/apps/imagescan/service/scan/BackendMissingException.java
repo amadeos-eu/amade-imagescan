@@ -1,17 +1,13 @@
 package eu.amadeos.apps.imagescan.service.scan;
 
-import java.io.IOException;
+import eu.amadeos.commons.process.ProgramMissingException;
 
-/** The scanning program a backend needs ({@code scanimage}, {@code powershell.exe}) is not installed. */
-public class BackendMissingException extends IOException {
-    private final String program;
-
+/**
+ * What a backend needs is not installed: a program ({@code scanimage} reports this as the
+ * {@link ProgramMissingException} of amade-commons) or a system part such as Windows Image Acquisition.
+ */
+public class BackendMissingException extends ProgramMissingException {
     public BackendMissingException(String program, Throwable cause) {
-        super(program + " not found", cause);
-        this.program = program;
-    }
-
-    public String program() {
-        return program;
+        super(program, cause);
     }
 }

@@ -4,6 +4,7 @@ import eu.amadeos.commons.i18n.Messages;
 import eu.amadeos.commons.i18n.Mnemonics;
 import eu.amadeos.commons.swing.AmadeUI;
 import eu.amadeos.commons.swing.EdtExecutor;
+import eu.amadeos.commons.swing.ToolButtons;
 import eu.amadeos.apps.imagescan.domain.ColorMode;
 import eu.amadeos.apps.imagescan.domain.ScanSettings;
 import eu.amadeos.apps.imagescan.domain.Scanner;

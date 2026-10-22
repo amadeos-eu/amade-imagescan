@@ -28,7 +28,7 @@ Languages: English, German, French, Spanish and Italian. The language follows th
   - A range such as `75..1200dpi` is reduced to common steps.
   - WIA cannot report its values, so the usual ones are offered.
 - **Edits keep every pixel and the raster type.** Line art stays 1 bit, grey stays grey. The resolution travels with the image (`ScannedImage`), so that saving and printing keep the true size.
-- **Testable without a display.** The presenter, the viewport and the crop frame have no Swing code. Backends get their processes (`CommandRunner`) or their COM calls (`WiaApi`) injected, so tests use fakes.
+- **Testable without a display.** The presenter, the viewport and the crop frame have no Swing code. Backends get their processes (`CommandRunner` from amade-commons) or their COM calls (`WiaApi`) injected, so tests use fakes.
 
 ## Packages
 
@@ -36,7 +36,7 @@ Languages: English, German, French, Spanish and Italian. The language follows th
 |---|---|
 | `bootstrap` | `AmadeImagescanApplication` (start through `AmadeApplication`), `ImagescanModule` (Guice; picks `SaneBackend` or `WiaBackend` by operating system) |
 | `domain` | `Scanner`, `ScanSettings` (dpi, `ColorMode`, optional `ScanArea` in mm), `ScannerOptions` (resolutions, mode names, glass size), `ScannedImage` (pixels + dpi), `ImageFormat` (PNG, JPEG, TIFF) |
-| `service.scan` | `ScannerBackend` (list, options, scan), `ScanService` (runs the backend in the background, caches options), `ScanMonitor` (progress, cancel), `CommandRunner` and `ProcessOutput` (external programs, standard output and error read at the same time), `BackendMissingException` |
+| `service.scan` | `ScannerBackend` (list, options, scan), `ScanService` (runs the backend in the background, caches options), `ScanMonitor` (progress, cancel), `BackendMissingException` (a `ProgramMissingException` of amade-commons, also for a missing WIA); external programs run through `CommandRunner` of amade-commons |
 | `service.scan.sane` | `SaneBackend`, `SaneOptionParser` (device list in our `-f` format or the classic `-L` lines, option list), `PnmReader` (P1–P6, 16-bit samples, line art as 1 bit) |
 | `service.scan.wia` | `WiaBackend` (settings → WIA item properties: intent first, then resolution and area), `WiaApi` (the calls needed), `ComWiaApi` (COM with JNA on one platform thread of its own; arguments as `VARIANT` by reference as WIA's type library declares them) |
 | `service.image` | `ImageOperations` (crop, quarter turns, mirroring on the raster), `ImageCodec` (resolution in PNG `pHYs`, JFIF density and TIFF tags, read back from ImageIO's neutral metadata), `ImageHistory` (undo/redo, last 8 steps), `ImageService` (open and save in the background) |
@@ -44,7 +44,7 @@ Languages: English, German, French, Spanish and Italian. The language follows th
 | `repository` | `ImageFiles` (atomic writes that keep permissions), `ImagescanPreferences` (`~/.config/amadeos/imagescan/imagescan.properties`: scanner, dpi, mode, file type, JPEG quality, visible bars) |
 | `ui.main` | `MainPresenter` (all commands, no Swing), `MainView`, `MainWindow`, `MainMenuBar`, `MainToolBar`, `ScanSettingsPanel` (scanner, mode, resolution, area and expected size, Preview and Scan), `ScanActions` (one action per command for menus and toolbar), `ImageKind` (preview, scan, file) |
 | `ui.view` | `ImageView` (zoom at the pointer, panning with the right or middle button, frame with eight handles and a size label), `Viewport` (zoom and scroll position), `CropSelection` (the frame in image coordinates) |
-| `ui.icons` | `ToolIcon` (toolbar icons drawn in Java2D in the theme's colours) |
+| `ui.icons` | `ImagescanGlyph` (the scanner, crop, turn, mirror and zoom glyphs; the shared ones and `ToolIcon` come from amade-commons) |
 
 ## Flows
 
@@ -59,7 +59,7 @@ Languages: English, German, French, Spanish and Italian. The language follows th
   3. `scan()` passes it to the backend. SANE gets it as `-l/-t/-x/-y` in mm; a backend without millimetre geometry scans the whole glass, and the area is cut out afterwards. WIA gets it as position and extent in pixels.
   4. Scans that would need more than 512 MB of memory are confirmed first.
 - **Threads**
-  - Scans, file access and edits run on the virtual-thread executor from amade-commons and continue on the event dispatch thread (`@Ui` executor).
+  - Scans, file access and edits run on the virtual-thread executor from amade-commons and continue on the event dispatch thread (`@Ui` executor of amade-commons).
   - COM calls run on their own platform thread.
   - Progress from `scanimage` arrives on a reader thread and is forwarded to the status bar.
 - **Cancel**

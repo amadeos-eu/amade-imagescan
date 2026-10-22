@@ -9,7 +9,8 @@ import eu.amadeos.apps.imagescan.repository.ImagescanPreferences.Bar;
 import eu.amadeos.apps.imagescan.service.image.ImageService;
 import eu.amadeos.apps.imagescan.service.print.PrintService;
 import eu.amadeos.apps.imagescan.service.scan.ScanService;
-import eu.amadeos.apps.imagescan.ui.icons.ToolIcon;
+import eu.amadeos.apps.imagescan.ui.icons.ImagescanGlyph;
+import eu.amadeos.commons.swing.ToolIcon;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -104,7 +105,7 @@ class MainWindowTest {
         BufferedImage canvas = new BufferedImage(32, 32, BufferedImage.TYPE_INT_ARGB);
         var g = canvas.createGraphics();
         try {
-            for (ToolIcon.Glyph glyph : ToolIcon.Glyph.values()) {
+            for (ImagescanGlyph glyph : ImagescanGlyph.values()) {
                 ToolIcon icon = new ToolIcon(glyph, 32);
                 icon.paintIcon(null, g, 0, 0);
                 assertEquals(32, icon.getIconWidth());

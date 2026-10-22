@@ -1,5 +1,6 @@
 package eu.amadeos.apps.imagescan.service.scan.sane;
 
+import eu.amadeos.commons.process.ProgramMissingException;
 import eu.amadeos.apps.imagescan.FakeProcess;
 import eu.amadeos.apps.imagescan.TestImages;
 import eu.amadeos.apps.imagescan.domain.ColorMode;
@@ -7,7 +8,6 @@ import eu.amadeos.apps.imagescan.domain.ScanArea;
 import eu.amadeos.apps.imagescan.domain.ScanSettings;
 import eu.amadeos.apps.imagescan.domain.Scanner;
 import eu.amadeos.apps.imagescan.domain.ScannerOptions;
-import eu.amadeos.apps.imagescan.service.scan.BackendMissingException;
 import eu.amadeos.apps.imagescan.service.scan.ScanMonitor;
 import org.junit.jupiter.api.Test;
 
@@ -57,9 +57,11 @@ class SaneBackendTest {
     @Test
     void reportsAMissingScanimage() {
         SaneBackend backend = new SaneBackend(command -> {
-            throw new IOException("Cannot run program \"scanimage\": error=2, No such file or directory");
+            // what CommandRunner.system() makes of the JDK's error
+            throw ProgramMissingException.check("scanimage",
+                    new IOException("Cannot run program \"scanimage\": error=2, No such file or directory"));
         });
-        BackendMissingException e = assertThrows(BackendMissingException.class, backend::listScanners);
+        ProgramMissingException e = assertThrows(ProgramMissingException.class, backend::listScanners);
         assertEquals("scanimage", e.program());
     }
 

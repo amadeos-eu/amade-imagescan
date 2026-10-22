@@ -1,9 +1,11 @@
 package eu.amadeos.apps.imagescan.ui.main;
 
 import com.google.inject.Inject;
+import eu.amadeos.commons.app.Ui;
 import eu.amadeos.commons.i18n.Language;
 import eu.amadeos.commons.i18n.LocaleSettings;
 import eu.amadeos.commons.i18n.Messages;
+import eu.amadeos.commons.process.ProgramMissingException;
 import eu.amadeos.apps.imagescan.domain.ColorMode;
 import eu.amadeos.apps.imagescan.domain.ImageFormat;
 import eu.amadeos.apps.imagescan.domain.ScanArea;
@@ -16,7 +18,6 @@ import eu.amadeos.apps.imagescan.repository.ImagescanPreferences.Bar;
 import eu.amadeos.apps.imagescan.service.image.ImageHistory;
 import eu.amadeos.apps.imagescan.service.image.ImageOperations;
 import eu.amadeos.apps.imagescan.service.image.ImageService;
-import eu.amadeos.apps.imagescan.service.scan.BackendMissingException;
 import eu.amadeos.apps.imagescan.service.scan.ScanMonitor;
 import eu.amadeos.apps.imagescan.service.scan.ScanService;
 import org.slf4j.Logger;
@@ -222,7 +223,7 @@ public final class MainPresenter {
                 scanners = List.of();
                 scanner = null;
                 view.showScanners(scanners, Optional.empty());
-                if (cause instanceof BackendMissingException missing) {
+                if (cause instanceof ProgramMissingException missing) {
                     view.showStatus(msg.get("status.no-backend"));
                     view.showError(msg.format("error.backend-missing", missing.program()));
                 } else {

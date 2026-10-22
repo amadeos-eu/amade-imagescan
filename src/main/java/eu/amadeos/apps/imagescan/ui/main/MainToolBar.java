@@ -1,6 +1,7 @@
 package eu.amadeos.apps.imagescan.ui.main;
 
 import eu.amadeos.commons.swing.EdtExecutor;
+import eu.amadeos.commons.swing.ToolButtons;
 
 import javax.swing.Action;
 import javax.swing.BorderFactory;

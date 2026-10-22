@@ -5,7 +5,6 @@ import com.google.inject.Provides;
 import com.google.inject.Scopes;
 import com.google.inject.Singleton;
 import eu.amadeos.commons.i18n.Messages;
-import eu.amadeos.commons.swing.EdtExecutor;
 import eu.amadeos.apps.imagescan.repository.ImageFiles;
 import eu.amadeos.apps.imagescan.repository.ImagescanPreferences;
 import eu.amadeos.apps.imagescan.service.image.ImageService;
@@ -16,11 +15,9 @@ import eu.amadeos.apps.imagescan.service.scan.sane.SaneBackend;
 import eu.amadeos.apps.imagescan.service.scan.wia.WiaBackend;
 import eu.amadeos.apps.imagescan.ui.main.MainView;
 import eu.amadeos.apps.imagescan.ui.main.MainWindow;
-import eu.amadeos.apps.imagescan.ui.main.Ui;
+
 
 import java.util.Locale;
-import java.util.concurrent.Executor;
-
 /**
  * amade-imagescan bindings. The background executor, theme, language and the other shared services come
  * from {@link eu.amadeos.commons.app.CommonsModule}.
@@ -49,13 +46,6 @@ public final class ImagescanModule extends AbstractModule {
 
     static boolean isWindows(String osName) {
         return osName.toLowerCase(Locale.ROOT).startsWith("windows");
-    }
-
-    /** Continues on the event dispatch thread after background work. */
-    @Provides
-    @Ui
-    Executor ui(EdtExecutor edt) {
-        return edt;
     }
 
     /** The texts in the language {@code AmadeApplication} chose. */

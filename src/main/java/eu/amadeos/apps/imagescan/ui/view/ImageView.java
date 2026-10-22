@@ -2,8 +2,9 @@ package eu.amadeos.apps.imagescan.ui.view;
 
 import eu.amadeos.commons.swing.AmadeUI;
 import eu.amadeos.commons.swing.EdtExecutor;
+import eu.amadeos.commons.swing.ToolIcon;
 import eu.amadeos.commons.theme.DesktopTheme;
-import eu.amadeos.apps.imagescan.ui.icons.ToolIcon;
+import eu.amadeos.apps.imagescan.ui.icons.ImagescanGlyph;
 
 import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
@@ -416,7 +417,7 @@ public final class ImageView extends JComponent {
         int cx = getWidth() / 2;
         int cy = getHeight() / 2;
         int size = 96;
-        new ToolIcon(ToolIcon.Glyph.SCANNER, size).paintIcon(this, g2, cx - size / 2, cy - size + 8);
+        new ToolIcon(ImagescanGlyph.SCANNER, size).paintIcon(this, g2, cx - size / 2, cy - size + 8);
         g2.setColor(getForeground());
         g2.setFont(getFont().deriveFont(Font.BOLD, 14f));
         FontMetrics fm = g2.getFontMetrics();
