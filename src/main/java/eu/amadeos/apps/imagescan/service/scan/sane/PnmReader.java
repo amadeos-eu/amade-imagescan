@@ -58,6 +58,7 @@ public final class PnmReader {
         };
     }
 
+    // --8<-- [start:bitmap]
     private BufferedImage readBitmap(int width, int height) throws IOException {
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_BINARY);
         byte[] data = ((DataBufferByte) image.getRaster().getDataBuffer()).getData();
@@ -67,6 +68,7 @@ public final class PnmReader {
         for (int i = 0; i < data.length; i++) data[i] = (byte) ~data[i];
         return image;
     }
+    // --8<-- [end:bitmap]
 
     private BufferedImage readPlainBitmap(int width, int height) throws IOException {
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_BINARY);

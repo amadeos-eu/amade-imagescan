@@ -59,6 +59,7 @@ public class SaneBackend implements ScannerBackend {
         return "SANE";
     }
 
+    // --8<-- [start:list]
     @Override
     public List<Scanner> listScanners() throws IOException, InterruptedException {
         String format = String.join(SaneOptionParser.SEPARATOR, "%d", "%v", "%m", "%t") + "%n";
@@ -74,6 +75,7 @@ public class SaneBackend implements ScannerBackend {
         }
         return scanners;
     }
+    // --8<-- [end:list]
 
     @Override
     public ScannerOptions options(Scanner scanner) throws IOException, InterruptedException {
@@ -84,6 +86,7 @@ public class SaneBackend implements ScannerBackend {
         return SaneOptionParser.parseOptions(result.stdoutText());
     }
 
+    // --8<-- [start:scan-command]
     /** The command line for a scan; public for tests. */
     public static List<String> scanCommand(Scanner scanner, ScanSettings settings, ScannerOptions options) {
         List<String> command = new ArrayList<>(List.of(PROGRAM, "-d", scanner.id(), "--format=pnm", "--progress"));
@@ -99,11 +102,13 @@ public class SaneBackend implements ScannerBackend {
         });
         return command;
     }
+    // --8<-- [end:scan-command]
 
     private static String mm(double value) {
         return String.format(Locale.ROOT, "%.1fmm", value);
     }
 
+    // --8<-- [start:scan]
     @Override
     public BufferedImage scan(Scanner scanner, ScanSettings settings, ScannerOptions options, ScanMonitor monitor)
             throws IOException, InterruptedException {
@@ -142,6 +147,7 @@ public class SaneBackend implements ScannerBackend {
         }
         return image;
     }
+    // --8<-- [end:scan]
 
     static BufferedImage cropToArea(BufferedImage image, ScanArea area, int dpi) {
         double px = dpi / ScanArea.MM_PER_INCH;
@@ -159,6 +165,7 @@ public class SaneBackend implements ScannerBackend {
         return process.exitValue();
     }
 
+    // --8<-- [start:progress]
     /** Splits standard error at carriage returns and newlines: progress lines, everything else kept. */
     static void readProgress(InputStream err, ScanMonitor monitor, ByteArrayOutputStream other) {
         StringBuilder line = new StringBuilder();
@@ -177,6 +184,7 @@ public class SaneBackend implements ScannerBackend {
             // The process was stopped.
         }
     }
+    // --8<-- [end:progress]
 
     private static void handleLine(String line, ScanMonitor monitor, ByteArrayOutputStream other) {
         if (line.isBlank()) return;

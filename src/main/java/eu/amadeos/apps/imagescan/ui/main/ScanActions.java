@@ -1,11 +1,11 @@
 package eu.amadeos.apps.imagescan.ui.main;
 
+import eu.amadeos.commons.i18n.Messages;
+import eu.amadeos.commons.i18n.Mnemonics;
 import eu.amadeos.commons.swing.StandardGlyph;
 import eu.amadeos.commons.swing.ToolIcon;
 import eu.amadeos.commons.swing.ToolIcon.Glyph;
 import eu.amadeos.apps.imagescan.ui.icons.ImagescanGlyph;
-import eu.amadeos.commons.i18n.Messages;
-import eu.amadeos.commons.i18n.Mnemonics;
 import eu.amadeos.apps.imagescan.ui.view.ImageView;
 
 import javax.swing.AbstractAction;
@@ -63,6 +63,7 @@ public final class ScanActions {
         copy = action("menu.edit.copy", null, KeyEvent.VK_C, CTRL, presenter::copy);
         selectAll = action("menu.edit.select-all", null, KeyEvent.VK_A, CTRL, view::selectAll);
         clearSelection = action("menu.edit.select-none", null, KeyEvent.VK_ESCAPE, 0, view::clearSelection);
+        // --8<-- [start:actions]
         crop = action("menu.image.crop", ImagescanGlyph.CROP, KeyEvent.VK_X, CTRL | SHIFT, presenter::crop);
         rotateLeft = action("menu.image.rotate-left", ImagescanGlyph.ROTATE_LEFT, KeyEvent.VK_L, CTRL,
                 presenter::rotateLeft);
@@ -77,6 +78,7 @@ public final class ScanActions {
         cancel = action("menu.scan.cancel", ImagescanGlyph.CANCEL, KeyEvent.VK_PERIOD, CTRL, presenter::cancelScan);
         refresh = action("menu.scan.refresh", StandardGlyph.REFRESH, KeyEvent.VK_F5, 0, presenter::refreshScanners);
         zoomIn = action("menu.view.zoom-in", StandardGlyph.ZOOM_IN, KeyEvent.VK_PLUS, CTRL, view::zoomIn);
+        // --8<-- [end:actions]
         zoomOut = action("menu.view.zoom-out", StandardGlyph.ZOOM_OUT, KeyEvent.VK_MINUS, CTRL, view::zoomOut);
         zoomFit = action("menu.view.zoom-fit", ImagescanGlyph.ZOOM_FIT, KeyEvent.VK_0, CTRL, view::zoomToFit);
         zoomActual = action("menu.view.zoom-actual", ImagescanGlyph.ZOOM_ACTUAL, KeyEvent.VK_1, CTRL,

@@ -20,6 +20,7 @@ public final class ImagePrintable implements Printable {
         this.scan = scan;
     }
 
+    // --8<-- [start:placement]
     /** Where the image goes on the page, in points. */
     public static Rectangle2D placement(ScannedImage scan, double x, double y, double width, double height) {
         double w;
@@ -39,6 +40,7 @@ public final class ImagePrintable implements Printable {
         }
         return new Rectangle2D.Double(x + (width - w) / 2, y + (height - h) / 2, w, h);
     }
+    // --8<-- [end:placement]
 
     @Override
     public int print(Graphics graphics, PageFormat page, int pageIndex) {

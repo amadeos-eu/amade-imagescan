@@ -8,6 +8,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.List;
 
+// --8<-- [start:backend]
 /**
  * Talks to the scanners of the platform: SANE on Linux, WIA on Windows. All methods block and run on a
  * background thread.
@@ -38,3 +39,4 @@ public interface ScannerBackend {
     BufferedImage scan(Scanner scanner, ScanSettings settings, ScannerOptions options, ScanMonitor monitor)
             throws IOException, InterruptedException;
 }
+// --8<-- [end:backend]

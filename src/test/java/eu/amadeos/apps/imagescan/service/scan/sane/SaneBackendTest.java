@@ -54,6 +54,7 @@ class SaneBackendTest {
         assertEquals("test:0", backend.listScanners().getFirst().id());
     }
 
+    // --8<-- [start:missing]
     @Test
     void reportsAMissingScanimage() {
         SaneBackend backend = new SaneBackend(command -> {
@@ -64,6 +65,7 @@ class SaneBackendTest {
         ProgramMissingException e = assertThrows(ProgramMissingException.class, backend::listScanners);
         assertEquals("scanimage", e.program());
     }
+    // --8<-- [end:missing]
 
     @Test
     void readsTheOptions() throws Exception {
@@ -109,6 +111,7 @@ class SaneBackendTest {
         assertEquals("scanimage: open of device epson2:libusb:001:004 failed: Device busy", e.getMessage());
     }
 
+    // --8<-- [start:cancel]
     @Test
     void cancelStopsScanimage() throws Exception {
         FakeProcess process = FakeProcess.hanging("P6 100 100 255\n".getBytes());
@@ -127,6 +130,7 @@ class SaneBackendTest {
         assertInstanceOf(CancellationException.class, e.getCause());
         assertTrue(process.isDestroyed());
     }
+    // --8<-- [end:cancel]
 
     @Test
     void cropsAfterwardsWithoutMillimetreGeometry() {

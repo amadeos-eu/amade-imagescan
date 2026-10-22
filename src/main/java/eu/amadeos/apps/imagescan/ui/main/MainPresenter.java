@@ -295,6 +295,7 @@ public final class MainPresenter {
 
     // ---------------------------------------------------------------- scanning
 
+    // --8<-- [start:scan-area]
     /** The frame in the preview as part of the glass; empty for the whole glass. */
     Optional<ScanArea> scanArea() {
         if (kind != ImageKind.PREVIEW || selection.isEmpty()) return Optional.empty();
@@ -303,6 +304,7 @@ public final class MainPresenter {
         ScanArea area = ScanArea.fromPixels(r.x, r.y, r.width, r.height, preview.resolution());
         return Optional.of(options.hasGlassSize() ? area.clampTo(options.maxWidth(), options.maxHeight()) : area);
     }
+    // --8<-- [end:scan-area]
 
     private int effectiveResolution() {
         return options.nearestResolution(settings.resolution());
@@ -366,6 +368,7 @@ public final class MainPresenter {
         return scanner != null && optionsReady && running == null && !busy;
     }
 
+    // --8<-- [start:start-scan]
     private void startScan(ScanSettings scanSettings, boolean isPreview) {
         Scanner device = scanner;
         int dpi = options.nearestResolution(scanSettings.resolution());
@@ -404,6 +407,7 @@ public final class MainPresenter {
             }
         }, ui);
     }
+    // --8<-- [end:start-scan]
 
     /** Stops the running scan; the image shown before stays. */
     public void cancelScan() {
@@ -477,6 +481,7 @@ public final class MainPresenter {
         edit(ImageOperations::flipVertical, "status.flipped");
     }
 
+    // --8<-- [start:edit]
     /** Runs an edit in the background; the result becomes a new step of the history. */
     private void edit(UnaryOperator<BufferedImage> operation, String statusKey) {
         if (!editable() || busy || running != null) return;
@@ -501,6 +506,7 @@ public final class MainPresenter {
                     updateCommands();
                 }, ui);
     }
+    // --8<-- [end:edit]
 
     public void undo() {
         if (!editable() || busy || running != null) return;
