@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- AppStream metadata of amade-imagescan, installed as /usr/share/metainfo/eu.amadeos.apps.imagescan.metainfo.xml.
+     amadeOS Software shows it for the installed package; a repository's appstream-generator reads it too. -->
+<component type="desktop-application">
+  <id>eu.amadeos.apps.imagescan</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>EUPL-1.2</project_license>
+
+  <name>amadeOS Image Scan</name>
+  <name xml:lang="de">amadeOS Bild scannen</name>
+  <name xml:lang="fr">amadeOS Numérisation</name>
+  <name xml:lang="es">amadeOS Escanear imagen</name>
+  <name xml:lang="it">amadeOS Scansione immagini</name>
+
+  <summary>Scan images and documents from a flatbed scanner</summary>
+  <summary xml:lang="de">Bilder und Dokumente mit dem Flachbettscanner einlesen</summary>
+  <summary xml:lang="fr">Numériser des images et des documents avec un scanner à plat</summary>
+  <summary xml:lang="es">Escanear imágenes y documentos con un escáner plano</summary>
+  <summary xml:lang="it">Acquisire immagini e documenti con uno scanner piano</summary>
+
+  <description>
+    <p>amade-imagescan is the scanning program of the amadeOS desktop: scan photos, letters and documents from a flatbed scanner, frame the part you want, crop, turn and save. It uses SANE, so it works with USB and network scanners.</p>
+    <p xml:lang="de">amade-imagescan ist das Scanprogramm des amadeOS-Desktops: Fotos, Briefe und Dokumente mit dem Flachbettscanner einlesen, den gewünschten Ausschnitt einrahmen, zuschneiden, drehen und speichern. Es nutzt SANE und arbeitet daher mit USB- und Netzwerkscannern.</p>
+    <p xml:lang="fr">amade-imagescan est le programme de numérisation du bureau amadeOS : numériser des photos, des lettres et des documents avec un scanner à plat, encadrer la partie voulue, recadrer, tourner et enregistrer. Il utilise SANE et fonctionne donc avec les scanners USB et réseau.</p>
+    <p xml:lang="es">amade-imagescan es el programa de escaneo del escritorio amadeOS: escanear fotos, cartas y documentos con un escáner plano, enmarcar la parte que quiera, recortar, girar y guardar. Usa SANE, por lo que funciona con escáneres USB y de red.</p>
+    <p xml:lang="it">amade-imagescan è il programma di scansione del desktop amadeOS: acquisire foto, lettere e documenti con uno scanner piano, inquadrare la parte desiderata, ritagliare, ruotare e salvare. Usa SANE, quindi funziona con scanner USB e di rete.</p>
+    <ul>
+      <li>Preview, frame, scan: only the framed part is scanned</li>
+      <li xml:lang="de">Vorschau, Rahmen, Scan: nur der eingerahmte Teil wird gescannt</li>
+      <li xml:lang="fr">Aperçu, cadre, numérisation : seule la partie encadrée est numérisée</li>
+      <li xml:lang="es">Vista previa, marco, escaneo: solo se escanea la parte enmarcada</li>
+      <li xml:lang="it">Anteprima, cornice, scansione: viene acquisita solo la parte inquadrata</li>
+      <li>Colour, greyscale or black and white, at the scanner's resolutions</li>
+      <li xml:lang="de">Farbe, Graustufen oder Schwarzweiß, in den Auflösungen des Scanners</li>
+      <li xml:lang="fr">Couleur, niveaux de gris ou noir et blanc, aux résolutions du scanner</li>
+      <li xml:lang="es">Color, escala de grises o blanco y negro, con las resoluciones del escáner</li>
+      <li xml:lang="it">Colore, scala di grigi o bianco e nero, alle risoluzioni dello scanner</li>
+      <li>Crop, rotate and flip, with undo</li>
+      <li xml:lang="de">Zuschneiden, drehen und spiegeln, mit Rückgängig</li>
+      <li xml:lang="fr">Recadrer, faire pivoter et retourner, avec annulation</li>
+      <li xml:lang="es">Recortar, girar y voltear, con deshacer</li>
+      <li xml:lang="it">Ritagliare, ruotare e capovolgere, con annulla</li>
+      <li>Save as PNG, JPEG or TIFF, or print at true size</li>
+      <li xml:lang="de">Als PNG, JPEG oder TIFF speichern, oder in Originalgröße drucken</li>
+      <li xml:lang="fr">Enregistrer en PNG, JPEG ou TIFF, ou imprimer en taille réelle</li>
+      <li xml:lang="es">Guardar como PNG, JPEG o TIFF, o imprimir a tamaño real</li>
+      <li xml:lang="it">Salvare come PNG, JPEG o TIFF, o stampare a grandezza reale</li>
+    </ul>
+  </description>
+
+  <launchable type="desktop-id">amade-imagescan.desktop</launchable>
+  <icon type="stock">amade-imagescan</icon>
+  <categories>
+    <category>Graphics</category>
+    <category>Scanning</category>
+  </categories>
+
+  <url type="homepage">https://github.com/datazuul/amade-imagescan</url>
+  <url type="bugtracker">https://github.com/datazuul/amade-imagescan/issues</url>
+  <developer id="eu.amadeos">
+    <name>amadeOS Project</name>
+  </developer>
+
+  <screenshots>
+    <screenshot type="default">
+      <caption>A preview with a frame around a photo</caption>
+      <caption xml:lang="de">Eine Vorschau mit einem Rahmen um ein Foto</caption>
+      <caption xml:lang="fr">Un aperçu avec un cadre autour d'une photo</caption>
+      <caption xml:lang="es">Una vista previa con un marco alrededor de una foto</caption>
+      <caption xml:lang="it">Un'anteprima con una cornice intorno a una foto</caption>
+      <image>https://raw.githubusercontent.com/datazuul/amade-imagescan/main/docs/screenshots/amade-imagescan.png</image>
+    </screenshot>
+  </screenshots>
+
+  <provides>
+    <binary>amade-imagescan</binary>
+  </provides>
+  <content_rating type="oars-1.1"/>
+</component>
