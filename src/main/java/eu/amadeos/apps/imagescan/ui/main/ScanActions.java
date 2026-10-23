@@ -65,9 +65,9 @@ public final class ScanActions {
         clearSelection = action("menu.edit.select-none", null, KeyEvent.VK_ESCAPE, 0, view::clearSelection);
         // --8<-- [start:actions]
         crop = action("menu.image.crop", ImagescanGlyph.CROP, KeyEvent.VK_X, CTRL | SHIFT, presenter::crop);
-        rotateLeft = action("menu.image.rotate-left", ImagescanGlyph.ROTATE_LEFT, KeyEvent.VK_L, CTRL,
+        rotateLeft = action("menu.image.rotate-left", StandardGlyph.ROTATE_LEFT, KeyEvent.VK_L, CTRL,
                 presenter::rotateLeft);
-        rotateRight = action("menu.image.rotate-right", ImagescanGlyph.ROTATE_RIGHT, KeyEvent.VK_R, CTRL,
+        rotateRight = action("menu.image.rotate-right", StandardGlyph.ROTATE_RIGHT, KeyEvent.VK_R, CTRL,
                 presenter::rotateRight);
         rotate180 = action("menu.image.rotate-180", null, 0, 0, presenter::rotate180);
         flipHorizontal = action("menu.image.flip-horizontal", ImagescanGlyph.FLIP_HORIZONTAL, 0, 0,
@@ -80,8 +80,8 @@ public final class ScanActions {
         zoomIn = action("menu.view.zoom-in", StandardGlyph.ZOOM_IN, KeyEvent.VK_PLUS, CTRL, view::zoomIn);
         // --8<-- [end:actions]
         zoomOut = action("menu.view.zoom-out", StandardGlyph.ZOOM_OUT, KeyEvent.VK_MINUS, CTRL, view::zoomOut);
-        zoomFit = action("menu.view.zoom-fit", ImagescanGlyph.ZOOM_FIT, KeyEvent.VK_0, CTRL, view::zoomToFit);
-        zoomActual = action("menu.view.zoom-actual", ImagescanGlyph.ZOOM_ACTUAL, KeyEvent.VK_1, CTRL,
+        zoomFit = action("menu.view.zoom-fit", StandardGlyph.ZOOM_FIT, KeyEvent.VK_0, CTRL, view::zoomToFit);
+        zoomActual = action("menu.view.zoom-actual", StandardGlyph.ZOOM_ACTUAL, KeyEvent.VK_1, CTRL,
                 view::zoomActualSize);
         update(new MainView.Commands(false, false, false, false, false, false, false, false));
     }
