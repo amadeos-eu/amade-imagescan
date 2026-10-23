@@ -4,21 +4,18 @@ import eu.amadeos.commons.swing.StandardGlyph;
 import eu.amadeos.commons.swing.ToolIcon;
 
 import java.awt.BasicStroke;
-import java.awt.Font;
-import java.awt.geom.Arc2D;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
 import java.awt.geom.Rectangle2D;
 
 /**
- * The toolbar glyphs only Imagescan needs; open, save, print, copy, undo, redo, refresh and zoom come from
- * {@link StandardGlyph}. The scanner's light and the crop area are in the theme's selection colour.
+ * The toolbar glyphs only Imagescan needs; open, save, print, copy, undo, redo, refresh, zoom and turning come
+ * from {@link StandardGlyph}. The scanner's light and the crop area are in the theme's selection colour.
  */
 public enum ImagescanGlyph implements ToolIcon.Glyph {
     PREVIEW, SCAN, CANCEL, SCANNER,
-    CROP, ROTATE_LEFT, ROTATE_RIGHT, FLIP_HORIZONTAL, FLIP_VERTICAL,
-    ZOOM_FIT, ZOOM_ACTUAL;
+    CROP, FLIP_HORIZONTAL, FLIP_VERTICAL;
 
     @Override
     public void paint(ToolIcon.Pen pen) {
@@ -34,22 +31,10 @@ public enum ImagescanGlyph implements ToolIcon.Glyph {
             case CANCEL -> cancel(pen);
             case SCANNER -> scanner(pen, 1, 4.5);
             case CROP -> crop(pen);
-            case ROTATE_LEFT -> rotate(pen);
-            case ROTATE_RIGHT -> {
-                pen.mirror();
-                rotate(pen);
-            }
             case FLIP_HORIZONTAL -> flip(pen);
             case FLIP_VERTICAL -> {
                 pen.g().rotate(Math.PI / 2, 8, 8);
                 flip(pen);
-            }
-            case ZOOM_FIT -> zoomFit(pen);
-            case ZOOM_ACTUAL -> {
-                pen.magnifier(6.5, 6.5, 5);
-                pen.g().setColor(pen.ink());
-                pen.g().setFont(pen.g().getFont().deriveFont(Font.BOLD, 6f));
-                pen.g().drawString("1:1", 3.2f, 8.6f);
             }
         }
     }
@@ -95,15 +80,6 @@ public enum ImagescanGlyph implements ToolIcon.Glyph {
         pen.fill(new Rectangle2D.Double(5.5, 5.5, 5, 5), pen.light());
     }
 
-    /** A sheet with a curved arrow over it, turning left; the right turn is its mirror image. */
-    private static void rotate(ToolIcon.Pen pen) {
-        pen.page(5.5, 5.5, 8, 9);
-        pen.bold(1.6f);
-        pen.draw(new Arc2D.Double(2, 2.5, 9, 9, 180, -100, Arc2D.OPEN));
-        pen.thin();
-        pen.triangle(0.5, 6, 4.5, 6, 2.5, 9.5);
-    }
-
     /** Two triangles mirrored at a dashed axis. */
     private static void flip(ToolIcon.Pen pen) {
         Path2D left = new Path2D.Double();
@@ -122,19 +98,5 @@ public enum ImagescanGlyph implements ToolIcon.Glyph {
                 new float[]{1.5f, 1.5f}, 0));
         pen.draw(new Line2D.Double(8, 1, 8, 15));
         pen.thin();
-    }
-
-    private static void zoomFit(ToolIcon.Pen pen) {
-        pen.g().setStroke(new BasicStroke(1.4f, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER));
-        double[][] corners = {{1.5, 1.5, 1, 1}, {14.5, 1.5, -1, 1}, {14.5, 14.5, -1, -1}, {1.5, 14.5, 1, -1}};
-        for (double[] c : corners) {
-            Path2D mark = new Path2D.Double();
-            mark.moveTo(c[0], c[1] + 4 * c[3]);
-            mark.lineTo(c[0], c[1]);
-            mark.lineTo(c[0] + 4 * c[2], c[1]);
-            pen.draw(mark);
-        }
-        pen.thin();
-        pen.fillAndDraw(new Rectangle2D.Double(4.5, 4.5, 7, 7), pen.paper());
     }
 }
