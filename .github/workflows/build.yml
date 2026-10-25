@@ -122,10 +122,11 @@ jobs:
               }
             }
           }
+      # The -P argument is quoted because PowerShell splits 1.0.0-dev.N at the first dot.
       - name: Build the MSI
-        run: ./gradlew windowsInstaller --no-daemon -PappVersion=${{ needs.test.outputs.version }}
+        run: ./gradlew windowsInstaller --no-daemon "-PappVersion=${{ needs.test.outputs.version }}"
       - name: Build the portable app image
-        run: ./gradlew windowsInstaller -PinstallerType=app-image --no-daemon -PappVersion=${{ needs.test.outputs.version }}
+        run: ./gradlew windowsInstaller -PinstallerType=app-image --no-daemon "-PappVersion=${{ needs.test.outputs.version }}"
       - name: Check and pack the results
         shell: pwsh
         run: |
