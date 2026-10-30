@@ -55,8 +55,8 @@
     <category>Scanning</category>
   </categories>
 
-  <url type="homepage">https://github.com/datazuul/amade-imagescan</url>
-  <url type="bugtracker">https://github.com/datazuul/amade-imagescan/issues</url>
+  <url type="homepage">https://github.com/amadeos-eu/amade-imagescan</url>
+  <url type="bugtracker">https://github.com/amadeos-eu/amade-imagescan/issues</url>
   <developer id="eu.amadeos">
     <name>amadeOS Project</name>
   </developer>
@@ -68,7 +68,7 @@
       <caption xml:lang="fr">Un aperçu avec un cadre autour d'une photo</caption>
       <caption xml:lang="es">Una vista previa con un marco alrededor de una foto</caption>
       <caption xml:lang="it">Un'anteprima con una cornice intorno a una foto</caption>
-      <image>https://raw.githubusercontent.com/datazuul/amade-imagescan/main/docs/screenshots/amade-imagescan.png</image>
+      <image>https://raw.githubusercontent.com/amadeos-eu/amade-imagescan/main/docs/screenshots/amade-imagescan.png</image>
     </screenshot>
   </screenshots>
 
