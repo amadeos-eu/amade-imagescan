@@ -1,6 +1,6 @@
 # amade-imagescan
 
-**amade-imagescan** is the scanning program of the [amadeOS](https://github.com/datazuul/amadeos) desktop: scan photos, letters and documents from a flatbed scanner, frame the part you want, crop, turn and save.
+**amade-imagescan** is the scanning program of the [amadeOS](https://github.com/amadeos-eu/amadeos) desktop: scan photos, letters and documents from a flatbed scanner, frame the part you want, crop, turn and save.
 
 ![License](https://img.shields.io/badge/license-EUPL--1.2-blue)
 ![Java](https://img.shields.io/badge/Java-25-orange)
@@ -15,7 +15,7 @@
 - **Save** as PNG (default), JPEG or TIFF, with the resolution written into the file so that other programs print the scan at its true size. Black-and-white scans are saved as 1-bit PNG or CCITT G4 TIFF. A dated file name in your Pictures folder is suggested.
 - **Open** existing images to crop or turn them, **print** at true size (or shrunk to fit), **copy** to the clipboard.
 - Five languages (English, Deutsch, Français, Español, Italiano), following the amadeOS desktop language; *Options → Language* overrides it.
-- Theme colours, Motif look and 3D toolbar buttons from [amade-commons](https://github.com/datazuul/amade-commons); the toolbar icons are drawn in Java2D, so no icon theme is needed.
+- Theme colours, Motif look and 3D toolbar buttons from [amade-commons](https://github.com/amadeos-eu/amade-commons); the toolbar icons are drawn in Java2D, so no icon theme is needed.
 
 ## Scanning backends
 
@@ -28,7 +28,7 @@
 
 ## Architecture
 
-Java 25, Swing and Guice (and JNA on Windows), built like [amade-writepad](https://github.com/datazuul/amade-writepad); theme, language and start-up come from `AmadeApplication` in amade-commons. Packages, key decisions and flows are described in [ARCHITECTURE.md](ARCHITECTURE.md).
+Java 25, Swing and Guice (and JNA on Windows), built like [amade-writepad](https://github.com/amadeos-eu/amade-writepad); theme, language and start-up come from `AmadeApplication` in amade-commons. Packages, key decisions and flows are described in [ARCHITECTURE.md](ARCHITECTURE.md).
 
 ## Build and run
 
