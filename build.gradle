@@ -87,8 +87,12 @@ tasks.register('deb') {
         }
 
         def launcher = new File(binDir, 'amade-imagescan')
+        // The options all amadeOS programs share (heap, garbage collector) come first from the argument file
+        // amadeos-session installs; the options after it win over them.
         launcher.text = """#!/bin/sh
-exec /usr/bin/java -jar /opt/amade-imagescan/amade-imagescan.jar "\$@"
+OPTIONS=/etc/amadeos/java/app.options
+[ -r "\$OPTIONS" ] || OPTIONS=/dev/null
+exec /usr/bin/java "@\$OPTIONS" -Xmx768m -jar /opt/amade-imagescan/amade-imagescan.jar "\$@"
 """
         launcher.setExecutable(true, false)
 
